@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academia Fit Control</title>
+    <style>
+        :root {
+            --bg: #f4efe7;
+            --panel: #fffaf4;
+            --ink: #1f1a17;
+            --muted: #6e6258;
+            --accent: #d46a2e;
+            --accent-dark: #ad4e1d;
+            --line: #e6d8c8;
+            --success: #2f7d4a;
+            --danger: #b33f2f;
+            --shadow: 0 20px 50px rgba(80, 50, 25, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at top left, rgba(212, 106, 46, 0.22), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(47, 125, 74, 0.18), transparent 25%),
+                linear-gradient(135deg, #f3eadf 0%, #f8f3ec 45%, #efe4d5 100%);
+            min-height: 100vh;
+        }
+
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 20px 48px;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 24px;
+            align-items: stretch;
+            margin-bottom: 24px;
+        }
+
+        .hero-card,
+        .panel {
+            background: rgba(255, 250, 244, 0.9);
+            border: 1px solid rgba(230, 216, 200, 0.9);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(4px);
+        }
+
+        .hero-card {
+            padding: 32px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(212, 106, 46, 0.12);
+            color: var(--accent-dark);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 4vw, 3.8rem);
+            line-height: 0.95;
+            margin: 16px 0 12px;
+            max-width: 10ch;
+        }
+
+        .hero p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 1.05rem;
+            line-height: 1.6;
+            max-width: 55ch;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            padding: 24px;
+        }
+
+        .stat {
+            border-radius: 18px;
+            padding: 20px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(248, 238, 228, 0.95));
+            border: 1px solid var(--line);
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 2rem;
+            margin-bottom: 6px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 24px;
+        }
+
+        .panel {
+            padding: 24px;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 1.25rem;
+        }
+
+        form {
+            display: grid;
+            gap: 14px;
+        }
+
+        label {
+            display: grid;
+            gap: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        input,
+        select {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 12px 14px;
+            font-size: 0.95rem;
+            background: #fff;
+            color: var(--ink);
+        }
+
+        input:focus,
+        select:focus {
+            outline: 2px solid rgba(212, 106, 46, 0.25);
+            border-color: var(--accent);
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            border: 0;
+            border-radius: 14px;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+        }
+
+        .primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .secondary {
+            background: #efe2d4;
+            color: var(--ink);
+        }
+
+        .ghost {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid rgba(179, 63, 47, 0.25);
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .search {
+            min-width: 260px;
+            flex: 1;
+        }
+
+        .status {
+            min-height: 24px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .status.success {
+            color: var(--success);
+        }
+
+        .status.error {
+            color: var(--danger);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 14px 10px;
+            border-bottom: 1px solid var(--line);
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        th {
+            color: var(--muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .badge.active {
+            background: rgba(47, 125, 74, 0.12);
+            color: var(--success);
+        }
+
+        .badge.inactive {
+            background: rgba(179, 63, 47, 0.12);
+            color: var(--danger);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .table-actions button {
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+        }
+
+        .empty {
+            padding: 24px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        @media (max-width: 920px) {
+            .hero,
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .page {
+                padding: 20px 14px 32px;
+            }
+
+            .hero-card,
+            .panel {
+                border-radius: 18px;
+            }
+
+            table,
+            thead,
+            tbody,
+            th,
+            td,
+            tr {
+                display: block;
+            }
+
+            thead {
+                display: none;
+            }
+
+            tr {
+                padding: 14px 0;
+                border-bottom: 1px solid var(--line);
+            }
+
+            td {
+                border: 0;
+                padding: 8px 0;
+            }
+
+            td::before {
+                content: attr(data-label);
+                display: block;
+                font-size: 0.75rem;
+                font-weight: 700;
+                color: var(--muted);
+                text-transform: uppercase;
+                margin-bottom: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <section class="hero">
+        <div class="hero-card">
+            <span class="eyebrow">Painel da Academia</span>
+            <h1>Controle seus alunos com rapidez.</h1>
+            <p>Cadastre novos alunos, atualize plano, acompanhe quem esta ativo e mantenha o CRUD da sua academia funcionando em uma tela simples e direta.</p>
+        </div>
+        <div class="hero-card stats">
+            <div class="stat">
+                <strong id="totalAlunos">0</strong>
+                <span>alunos cadastrados</span>
+            </div>
+            <div class="stat">
+                <strong id="totalAtivos">0</strong>
+                <span>alunos ativos</span>
+            </div>
+            <div class="stat">
+                <strong id="totalInativos">0</strong>
+                <span>alunos inativos</span>
+            </div>
+            <div class="stat">
+                <strong id="modoFormulario">Novo</strong>
+                <span>modo do formulario</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="layout">
+        <div class="panel">
+            <h2>Formulario do aluno</h2>
+            <div id="status" class="status"></div>
+            <form id="alunoForm">
+                <input type="hidden" id="alunoId">
+
+                <label for="nome">
+                    Nome
+                    <input id="nome" name="nome" type="text" placeholder="Ex: Ana Souza" required>
+                </label>
+
+                <label for="email">
+                    Email
+                    <input id="email" name="email" type="email" placeholder="ana@email.com" required>
+                </label>
+
+                <label for="telefone">
+                    Telefone
+                    <input id="telefone" name="telefone" type="text" placeholder="(11) 99999-9999" required>
+                </label>
+
+                <label for="plano">
+                    Plano
+                    <select id="plano" name="plano" required>
+                        <option value="">Selecione</option>
+                        <option value="Basico">Basico</option>
+                        <option value="Premium">Premium</option>
+                        <option value="Black">Black</option>
+                    </select>
+                </label>
+
+                <label for="ativo">
+                    Situacao
+                    <select id="ativo" name="ativo" required>
+                        <option value="true">Ativo</option>
+                        <option value="false">Inativo</option>
+                    </select>
+                </label>
+
+                <div class="actions">
+                    <button class="primary" type="submit" id="salvarBtn">Salvar aluno</button>
+                    <button class="secondary" type="button" id="limparBtn">Limpar</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="panel">
+            <div class="toolbar">
+                <div>
+                    <h2 style="margin: 0;">Alunos cadastrados</h2>
+                    <small style="color: var(--muted);">Busca rapida por nome, email ou plano</small>
+                </div>
+                <input id="busca" class="search" type="text" placeholder="Pesquisar aluno...">
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Telefone</th>
+                        <th>Plano</th>
+                        <th>Status</th>
+                        <th>Acoes</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tabelaAlunos">
+                    <tr>
+                        <td colspan="7" class="empty">Nenhum aluno cadastrado ainda.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    // Referencias principais da interface para leitura e manipulacao dos dados na tela.
+    const form = document.getElementById("alunoForm");
+    const statusBox = document.getElementById("status");
+    const tabelaAlunos = document.getElementById("tabelaAlunos");
+    const buscaInput = document.getElementById("busca");
+    const modoFormulario = document.getElementById("modoFormulario");
+    const totalAlunos = document.getElementById("totalAlunos");
+    const totalAtivos = document.getElementById("totalAtivos");
+    const totalInativos = document.getElementById("totalInativos");
+
+    let alunos = [];
+
+    function mostrarStatus(mensagem, tipo = "success") {
+        statusBox.textContent = mensagem;
+        statusBox.className = `status ${tipo}`;
+    }
+
+    function limparStatus() {
+        statusBox.textContent = "";
+        statusBox.className = "status";
+    }
+
+    function resetarFormulario() {
+        // Volta o formulario para o modo de cadastro.
+        form.reset();
+        document.getElementById("alunoId").value = "";
+        document.getElementById("ativo").value = "true";
+        modoFormulario.textContent = "Novo";
+        document.getElementById("salvarBtn").textContent = "Salvar aluno";
+        limparStatus();
+    }
+
+    function preencherFormulario(aluno) {
+        document.getElementById("alunoId").value = aluno.id;
+        document.getElementById("nome").value = aluno.nome;
+        document.getElementById("email").value = aluno.email;
+        document.getElementById("telefone").value = aluno.telefone;
+        document.getElementById("plano").value = aluno.plano;
+        document.getElementById("ativo").value = String(aluno.ativo);
+        modoFormulario.textContent = "Edicao";
+        document.getElementById("salvarBtn").textContent = "Atualizar aluno";
+        mostrarStatus(`Editando o aluno ${aluno.nome}.`, "success");
+    }
+
+    function atualizarIndicadores() {
+        // Atualiza os cards do topo com base na lista carregada da API.
+        const ativos = alunos.filter(aluno => aluno.ativo).length;
+        totalAlunos.textContent = alunos.length;
+        totalAtivos.textContent = ativos;
+        totalInativos.textContent = alunos.length - ativos;
+    }
+
+    function criarLinhaAluno(aluno) {
+        return `
+            <tr>
+                <td data-label="ID">${aluno.id}</td>
+                <td data-label="Nome">${aluno.nome}</td>
+                <td data-label="Email">${aluno.email}</td>
+                <td data-label="Telefone">${aluno.telefone}</td>
+                <td data-label="Plano">${aluno.plano}</td>
+                <td data-label="Status">
+                    <span class="badge ${aluno.ativo ? "active" : "inactive"}">
+                        ${aluno.ativo ? "Ativo" : "Inativo"}
+                    </span>
+                </td>
+                <td data-label="Acoes">
+                    <div class="table-actions">
+                        <button class="secondary" type="button" onclick="editarAluno(${aluno.id})">Editar</button>
+                        <button class="ghost" type="button" onclick="excluirAluno(${aluno.id})">Excluir</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+
+    function renderizarTabela(lista) {
+        if (!lista.length) {
+            tabelaAlunos.innerHTML = '<tr><td colspan="7" class="empty">Nenhum aluno encontrado.</td></tr>';
+            return;
+        }
+
+        tabelaAlunos.innerHTML = lista.map(criarLinhaAluno).join("");
+    }
+
+    async function carregarAlunos() {
+        try {
+            // Busca todos os alunos no backend e atualiza a tela.
+            const response = await fetch("/alunos");
+            if (!response.ok) {
+                throw new Error("Nao foi possivel carregar os alunos.");
+            }
+
+            alunos = await response.json();
+            atualizarIndicadores();
+            aplicarFiltro();
+        } catch (error) {
+            mostrarStatus(error.message, "error");
+        }
+    }
+
+    function aplicarFiltro() {
+        // O filtro acontece no navegador para deixar a busca mais rapida.
+        const termo = buscaInput.value.trim().toLowerCase();
+        const filtrados = alunos.filter(aluno =>
+            aluno.nome.toLowerCase().includes(termo) ||
+            aluno.email.toLowerCase().includes(termo) ||
+            aluno.plano.toLowerCase().includes(termo)
+        );
+        renderizarTabela(filtrados);
+    }
+
+    async function salvarOuAtualizarAluno(event) {
+        event.preventDefault();
+        limparStatus();
+
+        const id = document.getElementById("alunoId").value;
+        const aluno = {
+            nome: document.getElementById("nome").value,
+            email: document.getElementById("email").value,
+            telefone: document.getElementById("telefone").value,
+            plano: document.getElementById("plano").value,
+            ativo: document.getElementById("ativo").value === "true"
+        };
+
+        // Sem id faz cadastro; com id faz atualizacao.
+        const url = id ? `/alunos/${id}` : "/alunos";
+        const method = id ? "PUT" : "POST";
+
+        try {
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(aluno)
+            });
+
+            if (!response.ok) {
+                const erro = await response.json();
+                throw new Error(erro.mensagem || "Erro ao salvar aluno.");
+            }
+
+            await carregarAlunos();
+            resetarFormulario();
+            mostrarStatus(id ? "Aluno atualizado com sucesso." : "Aluno cadastrado com sucesso.", "success");
+        } catch (error) {
+            mostrarStatus(error.message, "error");
+        }
+    }
+
+    async function excluirAluno(id) {
+        const confirmou = window.confirm("Deseja excluir este aluno?");
+        if (!confirmou) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/alunos/${id}`, {
+                method: "DELETE"
+            });
+
+            if (!response.ok) {
+                const erro = await response.json();
+                throw new Error(erro.mensagem || "Erro ao excluir aluno.");
+            }
+
+            await carregarAlunos();
+            resetarFormulario();
+            mostrarStatus("Aluno excluido com sucesso.", "success");
+        } catch (error) {
+            mostrarStatus(error.message, "error");
+        }
+    }
+
+    function editarAluno(id) {
+        // Preenche o formulario com os dados atuais para facilitar a edicao.
+        const aluno = alunos.find(item => item.id === id);
+        if (!aluno) {
+            mostrarStatus("Aluno nao encontrado para edicao.", "error");
+            return;
+        }
+        preencherFormulario(aluno);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    window.editarAluno = editarAluno;
+    window.excluirAluno = excluirAluno;
+
+    form.addEventListener("submit", salvarOuAtualizarAluno);
+    buscaInput.addEventListener("input", aplicarFiltro);
+    document.getElementById("limparBtn").addEventListener("click", resetarFormulario);
+
+    resetarFormulario();
+    carregarAlunos();
+</script>
+</body>
+</html>
