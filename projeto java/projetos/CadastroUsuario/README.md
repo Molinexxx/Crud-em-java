@@ -2,6 +2,8 @@
 
 API REST em Java com Spring Boot para cadastrar alunos de uma academia.
 
+> **Status:** a versão auditada compila, mas falha na inicialização devido ao conflito entre dois componentes chamados `globalExceptionHandler`. As rotas abaixo descrevem o contrato presente no código. Consulte o [README da raiz](../../../README.md) para o comando de execução.
+
 ## Funcionalidades
 
 - Cadastrar aluno
@@ -54,19 +56,14 @@ API REST em Java com Spring Boot para cadastrar alunos de uma academia.
 }
 ```
 
-### Deletar aluno
+### Excluir aluno
 
 `DELETE /alunos/1`
 
 ## Tela HTML
 
-- Pagina inicial: `http://localhost:8080/`
-- A tela consome a propria API `/alunos`
-- Permite cadastrar, listar, editar, excluir e pesquisar alunos
+A página inicial usa a API `/alunos` para cadastrar, listar, editar, excluir e pesquisar alunos. Quando a aplicação estiver em execução, a interface será servida em [http://localhost:8080/](http://localhost:8080/).
 
 ## Banco H2
 
-- Console: `http://localhost:8080/h2-console`
-- JDBC URL: `jdbc:h2:mem:academia`
-- User: `sa`
-- Password: vazio
+O banco `jdbc:h2:mem:academia` é temporário. A configuração do [console H2](http://localhost:8080/h2-console) fica em [application.properties](src/main/resources/application.properties).
